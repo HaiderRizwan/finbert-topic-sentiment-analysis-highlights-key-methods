@@ -1,0 +1,28 @@
+metric,value
+Model,ProsusAI/finbert
+Epochs,5
+Learning Rate,2e-05
+Batch Size,16
+Weight Decay,0.01
+Warmup Steps,100
+Max Length,128
+Training Time (minutes),2.42
+Training Time (seconds),145.04
+Random Seed,42
+Accuracy,0.9824
+Precision,0.9634
+Recall,0.9881
+F1-Score,0.9749
+Accuracy,0.9765
+Precision,0.9765
+Recall,0.9536
+F1-Score,0.9639
+Positive Precision,0.9438
+Positive Recall,0.9767
+Positive F1,0.96
+Neutral Precision,0.9858
+Neutral Recall,0.9952
+Neutral F1,0.9905
+Negative Precision,1.0
+Negative Recall,0.8889
+Negative F1,0.9412
