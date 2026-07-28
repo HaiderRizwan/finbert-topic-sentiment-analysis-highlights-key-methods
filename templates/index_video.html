@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeToon - Video Automation</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { margin-bottom: 20px; color: #38bdf8; }
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="file"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #38bdf8;
+            box-sizing: border-box;
+        }
+        button {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover { transform: scale(1.05); background: #7dd3fc; }
+        button:disabled { background: #64748b; cursor: not-allowed; transform: none; }
+        #result { margin-top: 30px; text-align: left; }
+        .summary-box {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SafeToon Video Automation</h1>
+        <p>Extract frames from a video and auto-categorize them</p>
+        
+        <div class="form-group">
+            <label for="videoInput">Upload Video</label>
+            <input type="file" id="videoInput" accept="video/mp4,video/x-m4v,video/*">
+        </div>
+
+        <div class="form-group">
+            <label for="fpsInput">Extraction FPS</label>
+            <input type="number" id="fpsInput" value="1" step="0.1" min="0.1">
+        </div>
+
+        <div class="form-group">
+            <label for="modelSelect">Select Model</label>
+            <select id="modelSelect">
+                <option value="nasnet">NASNet (Classification)</option>
+                <option value="yolov8">YOLOv8 (Object Detection)</option>
+            </select>
+        </div>
+
+        <button id="processBtn" onclick="processVideo()">Process Video</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function processVideo() {
+            const fileField = document.getElementById('videoInput');
+            const fpsInput = document.getElementById('fpsInput').value;
+            const modelSelect = document.getElementById('modelSelect').value;
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('processBtn');
+            
+            if (!fileField.files[0]) {
+                alert("Please select a video file first.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Uploading & Processing... (This may take a while)";
+            resultDiv.innerHTML = "<p style='color: #fbbf24'>Extracting frames and running inference on GPU... Please do not close this window.</p>";
+            
+            const formData = new FormData();
+            formData.append('file', fileField.files[0]);
+            formData.append('fps', fpsInput);
+            formData.append('model_type', modelSelect);
+
+            try {
+                const response = await fetch('/process_video', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    let html = `<h3>Processing Complete!</h3>`;
+                    html += `<div class="summary-box">
+                                <p><strong>Total Frames Processed:</strong> ${data.total_frames}</p>
+                                <p><strong>Output Directory:</strong> ${data.output_dir}</p>
+                                <h4>Category Breakdown:</h4><ul>`;
+                    
+                    for (const [cls, count] of Object.entries(data.categories)) {
+                        html += `<li>${cls}: ${count} frames</li>`;
+                    }
+                    html += `</ul></div>`;
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: #ef4444">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: #ef4444">Network Error: ${error.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Process Video";
+            }
+        }
+    </script>
+</body>
+</html>

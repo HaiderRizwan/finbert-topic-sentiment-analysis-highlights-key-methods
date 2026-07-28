@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeToon - Mixed Cartoon Classifier</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { margin-bottom: 20px; color: #38bdf8; }
+        input[type="file"] { margin: 20px 0; }
+        button {
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        button:hover { transform: scale(1.05); background: #7dd3fc; }
+        #result { margin-top: 30px; text-align: left; }
+        .prob-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            height: 10px;
+            width: 100%;
+            margin: 5px 0 15px 0;
+            overflow: hidden;
+        }
+        .prob-fill {
+            height: 100%;
+            background: #38bdf8;
+            transition: width 0.5s ease-out;
+        }
+        .class-label { font-weight: bold; display: flex; justify-content: space-between; }
+        img#preview {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SafeToon - Mixed Cartoon</h1>
+        <p>Test the 7-class cartoon safety model (CPU Mode)</p>
+        
+        <input type="file" id="imageInput" accept="image/*">
+        <br>
+        <img id="preview" alt="Image preview">
+        <select id="modelSelect" style="margin: 10px; padding: 10px; border-radius: 5px; background: #1e293b; color: white; border: 1px solid #38bdf8;">
+            <option value="nasnet">NASNet (Classification)</option>
+            <option value="yolov8">YOLOv8 (Object Detection)</option>
+        </select>
+        <br>
+        <button onclick="predict()">Predict Content</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+
+        imageInput.onchange = evt => {
+            const [file] = imageInput.files;
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            }
+        }
+
+        async function predict() {
+            const fileField = document.getElementById('imageInput');
+            const resultDiv = document.getElementById('result');
+            const modelSelect = document.getElementById('modelSelect').value;
+            
+            if (!fileField.files[0]) {
+                alert("Please select an image first.");
+                return;
+            }
+
+            resultDiv.innerHTML = "Processing...";
+            
+            const formData = new FormData();
+            formData.append('file', fileField.files[0]);
+            formData.append('model_type', modelSelect);
+
+            try {
+                const response = await fetch('/predict_mixed', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.annotated_image) {
+                        document.getElementById('preview').src = 'data:image/jpeg;base64,' + data.annotated_image;
+                    }
+                    let html = `<h3>Prediction: <span style="color: #38bdf8">${data.prediction}</span> (${data.confidence}%)</h3>`;
+                    for (const [cls, prob] of Object.entries(data.details)) {
+                        html += `
+                            <div class="class-label">
+                                <span>${cls}</span>
+                                <span>${prob}%</span>
+                            </div>
+                            <div class="prob-bar">
+                                <div class="prob-fill" style="width: ${prob}%"></div>
+                            </div>
+                        `;
+                    }
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: #ef4444">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: #ef4444">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WBS Chart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: white;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .wbs-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: fit-content;
+        }
+        .node {
+            border: 1.5px solid #000;
+            padding: 8px 12px;
+            text-align: center;
+            background: white;
+            font-size: 14px;
+            min-width: 120px;
+            position: relative;
+        }
+        .root {
+            font-weight: 700;
+            font-size: 18px;
+            padding: 12px 24px;
+            background: #f8fafc;
+        }
+        .phase {
+            font-weight: 600;
+            background: #f1f5f9;
+            padding: 10px 20px;
+            width: 250px;
+        }
+        .module {
+            font-weight: 600;
+            font-size: 11px;
+            padding: 6px;
+            width: 140px;
+        }
+        .task {
+            font-size: 10px;
+            border-style: solid;
+            border-width: 1px;
+            margin-top: 10px;
+            width: 130px;
+            background: #fff;
+        }
+        .dashed {
+            border-style: dashed !important;
+        }
+        
+        .row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* Connections */
+        .connector-v {
+            width: 2px;
+            background: #000;
+            height: 20px;
+        }
+        
+        .tree-level {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        h1 { font-size: 1.2rem; text-align: center; margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="wbs-container" id="wbs-chart">
+        <div class="node root">SafeToon System</div>
+        
+        <!-- FYP-1 -->
+        <div class="tree-level">
+            <div class="connector-v"></div>
+            <div class="node phase">FYP-1 (Completed)</div>
+            <div class="connector-v"></div>
+            <div class="row">
+                <!-- Module 1 -->
+                <div class="tree-level">
+                    <div class="node module">Video Ingestion</div>
+                    <div class="task-list">
+                        <div class="node task">Validation</div>
+                        <div class="node task">Extraction<br>(Frame/Audio)</div>
+                        <div class="node task">Metadata Gen</div>
+                    </div>
+                </div>
+                <!-- Module 2 -->
+                <div class="tree-level">
+                    <div class="node module">Dataset Mgmt</div>
+                    <div class="task-list">
+                        <div class="node task">Taxonomy<br>(3 Classes)</div>
+                        <div class="node task">Annotation Guides</div>
+                    </div>
+                </div>
+                <!-- Module 3 -->
+                <div class="tree-level">
+                    <div class="node module">Frame Analyzer</div>
+                    <div class="task-list">
+                        <div class="node task">Preprocessing</div>
+                        <div class="node task">Inference Endpoint</div>
+                    </div>
+                </div>
+                <!-- Module 4 -->
+                <div class="tree-level">
+                    <div class="node module">Training & Eval</div>
+                    <div class="task-list">
+                        <div class="node task">NASNet / DINOv2</div>
+                        <div class="node task">Metrics & Curves</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FYP-2 -->
+        <div class="tree-level">
+            <div class="connector-v dashed"></div>
+            <div class="node phase dashed">FYP-2 (Planned)</div>
+            <div class="connector-v dashed"></div>
+            <div class="row">
+                <!-- Module 5 -->
+                <div class="tree-level">
+                    <div class="node module dashed">Audio Analyzer</div>
+                    <div class="task-list">
+                        <div class="node task dashed">Profanity Detect</div>
+                        <div class="node task dashed">Emotion Detect</div>
+                    </div>
+                </div>
+                <!-- Module 6 -->
+                <div class="tree-level">
+                    <div class="node module dashed">Surgical Cut</div>
+                    <div class="task-list">
+                        <div class="node task dashed">Scene Blurring</div>
+                        <div class="node task dashed">Audio Muting</div>
+                        <div class="node task dashed">Video Recon</div>
+                    </div>
+                </div>
+                <!-- Module 7 -->
+                <div class="tree-level">
+                    <div class="node module dashed">Dashboard</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

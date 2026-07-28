@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeToon Inference Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <main class="glass-panel">
+        <header>
+            <nav class="pill-nav">
+                <a href="/" class="nav-btn active">Inference Engine</a>
+                <a href="/ingestion" class="nav-btn">Ingestion Pipeline</a>
+            </nav>
+            <h1 style="margin-top: 20px;">SafeToon</h1>
+            <p>Select your architecture and deploy deep learning analysis.</p>
+        </header>
+
+        <section class="controls">
+            <div class="dropdown-container">
+                <label for="model-select">Running Architecture</label>
+                <select id="model-select">
+                    <option value="nasnet">NASNet Mobile (Recommendeds)</option>
+                    <option value="mobilenet">MobileNetV3 Large (Debug Only)</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="upload-zone" id="drop-zone">
+            <input type="file" id="file-upload" accept="image/jpeg, image/png, image/webp" hidden>
+            <div class="upload-content">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <h3>Drag & Drop a Frame Here</h3>
+                <p>or click to browse local files</p>
+                <div id="file-preview" class="hidden"></div>
+            </div>
+        </section>
+
+        <button id="analyze-btn" disabled>
+            <span class="btn-text">Initialize Inference</span>
+            <span class="btn-spinner hidden"></span>
+        </button>
+
+        <section class="results-panel hidden" id="results-panel">
+            <h2>Analysis Complete</h2>
+            <div class="status-card" id="primary-status">
+                <h3 id="primary-class">Safe</h3>
+                <p id="primary-confidence">99.2% Confidence</p>
+            </div>
+
+            <div class="detailed-metrics">
+                <div class="metric-row">
+                    <label>Safe</label>
+                    <div class="bar-bg">
+                        <div class="bar-fill fill-safe" id="bar-safe"></div>
+                    </div>
+                    <span id="txt-safe">0%</span>
+                </div>
+                <div class="metric-row">
+                    <label>Violence</label>
+                    <div class="bar-bg">
+                        <div class="bar-fill fill-violence" id="bar-violence"></div>
+                    </div>
+                    <span id="txt-violence">0%</span>
+                </div>
+                <div class="metric-row">
+                    <label>Erotism</label>
+                    <div class="bar-bg">
+                        <div class="bar-fill fill-erotism" id="bar-erotism"></div>
+                    </div>
+                    <span id="txt-erotism">0%</span>
+                </div>
+            </div>
+
+            <div id="uncertainty-alert" class="hidden warning-box">
+                ⚠️ <strong>High Uncertainty Detected</strong>: The model is confused between multiple categories. Human review recommended.
+            </div>
+
+            <div class="debug-metrics" id="debug-metrics">
+                <span class="debug-badge">Inference Latency: <span id="latency-ms">0</span> ms</span>
+                <span class="debug-badge">Model Loaded: <span id="model-loaded">nasnet</span></span>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+
+</html>

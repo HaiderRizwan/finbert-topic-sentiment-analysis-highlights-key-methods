@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>SafeToon UML A4</title>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        mermaid.initialize({
+            startOnLoad: true,
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                nodeSpacing: 15,
+                rankSpacing: 25,
+                curve: "linear"
+            }
+        });
+    </script>
+
+    <style>
+        /* ===== A4 SETUP ===== */
+        @page {
+            size: A4;
+            margin: 8mm;
+        }
+
+        body {
+            margin: 0;
+            background: white;
+            font-family: Arial;
+        }
+
+        /* A4 container */
+        .a4 {
+            width: 210mm;
+            height: 297mm;
+            padding: 8mm;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        /* FORCE diagram compression */
+        .mermaid {
+            transform: scale(0.72);
+            transform-origin: top left;
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="a4">
+
+        <div class="mermaid">
+            graph TB
+
+            SafeToon["SafeToon System"]
+
+            FYP1["FYP-1 (Completed)"]
+            FYP2["FYP-2 (Planned)"]
+
+            SafeToon --> FYP1
+            SafeToon --> FYP2
+
+            subgraph F1["FYP-1 Modules"]
+            direction TB
+
+            Ingestion["Video Ingestion"]
+            Dataset["Dataset Mgmt"]
+            Analyzer["Frame Analyzer"]
+            Training["Training & Eval"]
+
+            FYP1 --> Ingestion
+            FYP1 --> Dataset
+            FYP1 --> Analyzer
+            FYP1 --> Training
+
+            Ingestion --> Val["Validation"]
+            Ingestion --> Ext["Frame/Audio Extraction"]
+            Ingestion --> Meta["Metadata Gen"]
+
+            Dataset --> Tax["3-Class Taxonomy"]
+            Dataset --> Ann["Annotation Guides"]
+
+            Analyzer --> Pre["Preprocessing"]
+            Analyzer --> Inf["Inference Endpoint"]
+
+            Training --> Models["NASNet / DINOv2"]
+            Training --> Metrics["Metrics & Curves"]
+
+            end
+
+            subgraph F2["FYP-2 Modules"]
+            direction TB
+
+            Audio["Audio Analyzer"]
+            Cut["Surgical Cut"]
+            UI["Dashboard"]
+
+            FYP2 --> Audio
+            FYP2 --> Cut
+            FYP2 --> UI
+
+            Audio --> Prof["Profanity Detect"]
+            Audio --> Em["Emotion Detect"]
+
+            Cut --> Blur["Scene Blurring"]
+            Cut --> Mute["Audio Muting"]
+            Cut --> Recon["Video Reconstruction"]
+
+            end
+
+        </div>
+
+    </div>
+</body>
+
+</html>

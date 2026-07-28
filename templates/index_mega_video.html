@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeToon - MEGA Video Analysis</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { margin-bottom: 20px; color: #fbbf24; }
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="file"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #fbbf24;
+            box-sizing: border-box;
+        }
+        button {
+            background: #fbbf24;
+            color: #0f172a;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover { transform: scale(1.02); background: #fcd34d; }
+        button:disabled { background: #64748b; cursor: not-allowed; transform: none; }
+        #result { margin-top: 30px; text-align: left; }
+        .summary-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border-left: 5px solid #fbbf24;
+        }
+        .progress-indicator {
+            color: #fbbf24;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MEGA Video Safety Analysis</h1>
+        <p>Using 97.6% Accuracy NASNet Model (Erotism, Violence, Safe)</p>
+        
+        <div class="form-group">
+            <label for="videoInput">Upload Videos (Select multiple)</label>
+            <input type="file" id="videoInput" accept="video/mp4,video/x-m4v,video/*" multiple>
+        </div>
+
+        <div class="form-group">
+            <label for="fpsInput">Extraction FPS (Frames per second)</label>
+            <input type="number" id="fpsInput" value="1" step="0.1" min="0.1">
+        </div>
+
+        <button id="processBtn" onclick="processVideo()">Analyze Videos</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function processVideo() {
+            const fileField = document.getElementById('videoInput');
+            const fpsInput = document.getElementById('fpsInput').value;
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('processBtn');
+            
+            if (!fileField.files.length) {
+                alert("Please select one or more video files first.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = `Processing ${fileField.files.length} video(s)...`;
+            resultDiv.innerHTML = "<p class='progress-indicator'>Uploading videos and running NASNet inference... This may take a while depending on the number of videos.</p>";
+            
+            const formData = new FormData();
+            for (let i = 0; i < fileField.files.length; i++) {
+                formData.append('file', fileField.files[i]);
+            }
+            formData.append('fps', fpsInput);
+
+            try {
+                const response = await fetch('/process_mega_video', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    let html = `<h3>✅ Analysis Complete</h3>`;
+                    html += `<div class="summary-box">
+                                <p><strong>Total Frames Scanned:</strong> ${data.total_frames}</p>
+                                <p><strong>Sorted Directory:</strong> <br><small>${data.output_dir}</small></p>
+                                <h4>Detection Summary:</h4><ul>`;
+                    
+                    for (const [cls, count] of Object.entries(data.categories)) {
+                        html += `<li><strong>${cls.toUpperCase()}</strong>: ${count} frames</li>`;
+                    }
+                    html += `</ul>
+                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px;">Note: Any uncertain frames were automatically moved to 'safe'.</p>
+                    </div>`;
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: #ef4444">❌ Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: #ef4444">❌ Network Error: ${error.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Analyze Video";
+            }
+        }
+    </script>
+</body>
+</html>

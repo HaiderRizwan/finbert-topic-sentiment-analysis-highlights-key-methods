@@ -1,0 +1,1 @@
+"""SafeToon frames package."""

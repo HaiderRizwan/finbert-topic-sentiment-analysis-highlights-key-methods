@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Technical Report: Comparative Analysis of Elsagate Content Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f172a;
+            --accent: #1e40af;
+            --text-main: #334155;
+            --text-header: #0f172a;
+            --bg-light: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            line-height: 1.8;
+            margin: 0;
+            padding: 4rem 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--navy);
+            padding-bottom: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--text-header);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            color: var(--text-header);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-top: 4rem;
+            text-transform: capitalize;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--navy);
+            margin-top: 2rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Formal Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        th, td {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--navy);
+            font-weight: 700;
+        }
+
+        .highlight {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+
+        /* Visualization Section */
+        .visualization-block {
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .visualization-block img {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            border: 1px solid var(--border);
+            margin: 1.5rem 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .nasnet-grid {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .nasnet-grid img {
+            width: 48%;
+        }
+
+        /* Progress Bar */
+        .dataset-bar {
+            height: 30px;
+            width: 100%;
+            background: #f1f5f9;
+            display: flex;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+        }
+
+        .bar-segment { height: 100%; }
+
+        .text-success { color: #10b981 !important; font-weight: 700; }
+        .text-danger { color: #ef4444 !important; font-weight: 700; }
+        .text-warning { color: #f59e0b !important; font-weight: 700; }
+
+        .footer-note {
+            margin-top: 6rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Technical Comparative Report</h1>
+            <div class="subtitle">Research Paper Baseline vs. SafeToon Proposed Solution</div>
+            <p style="margin-top: 1.5rem; color: #64748b;">A comparative study evaluating the effectiveness of the SafeToon filtration system against existing research (Ishikawa et al.).</p>
+        </header>
+
+        <!-- SECTION 1: RESEARCH BASELINE -->
+        <section>
+            <h2>I. Research Paper Baseline</h2>
+            <p>This section summarizes the findings from the reference study, <em>"Combating the Elsagate Phenomenon: Deep Learning Architectures for Disturbing Cartoons,"</em> as the performance baseline.</p>
+            
+            <h3>Research Dataset Profile</h3>
+            <p>The original study utilized a dataset of 3,294 videos sampled at 1 frame per second, with labels assigned at the video level.</p>
+            
+            <div style="margin: 2rem 0;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--navy);">
+                    <span>SAFE (54.6%)</span>
+                    <span>DISTURBING (45.4%)</span>
+                </div>
+                <div class="dataset-bar" style="height: 45px; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                    <div class="bar-segment" style="width: 54.6%; background: #64748b; border-right: 2px solid #fff;" title="Safe"></div>
+                    <div class="bar-segment" style="width: 45.4%; background: #991b1b;" title="Disturbing"></div>
+                </div>
+                <p style="text-align: center; font-size: 0.9rem; margin-top: 0.5rem; color: #64748b;">
+                    Total Sample Size: <strong>3,294 Videos</strong>
+                </p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Total Videos</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span style="color: #64748b; font-weight: bold;">●</span> Safe Content</td><td>1,798</td><td>54.6%</td></tr>
+                    <tr><td><span style="color: #991b1b; font-weight: bold;">●</span> Disturbing Content</td><td>1,496</td><td>45.4%</td></tr>
+                    <tr class="highlight"><td><strong>Total</strong></td><td><strong>3,294</strong></td><td><strong>100%</strong></td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 3rem;">Table 1: Baseline Model Performance</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Architecture</th>
+                        <th>Dataset Strategy</th>
+                        <th>Train Accuracy</th>
+                        <th>Test Accuracy</th>
+                        <th>F2-Measure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NASNet-A</td>
+                        <td>Whole Video Labels</td>
+                        <td>95.3%</td>
+                        <td class="text-success">92.6%</td>
+                        <td>88.7%</td>
+                    </tr>
+                    <tr>
+                        <td>GoogLeNet</td>
+                        <td>Whole Video Labels</td>
+                        <td>96.1%</td>
+                        <td>--</td>
+                        <td>--</td>
+                    </tr>
+                    <tr>
+                        <td>SqueezeNet</td>
+                        <td>Whole Video Labels</td>
+                        <td>96.1%</td>
+                        <td class="text-danger">62.0%</td>
+                        <td class="text-danger">37.8%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 2: ARCHITECTURAL BENCHMARKING -->
+        <section>
+            <h2>II. Architectural Benchmarking</h2>
+            <p>To justify the selection of <strong>DINOv2</strong> for the SafeToon project, a comparative benchmarking was conducted against alternative SOTA (State-of-the-Art) architectures.</p>
+            
+            <div style="text-align: center; margin: 3rem 0;">
+                <img src="architectural_comparison_radar.png" alt="Architectural Radar Chart" style="width: 100%; max-width: 600px;">
+                <p style="font-size: 0.9rem; color: #64748b; margin-top: 1rem; font-style: italic;">
+                    Figure 1: Strength Comparison Radar Chart. DINOv2 provides the optimal balance of Efficiency and Generalization.
+                </p>
+            </div>
+
+            <h3>Table 2: Multi-Model Benchmark Comparison</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Architecture Type</th>
+                        <th>Parameters</th>
+                        <th>Training Method</th>
+                        <th>Core Strength</th>
+                        <th>Target Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>NASNet-A</strong></td>
+                        <td>CNN (NAS)</td>
+                        <td>~88M</td>
+                        <td>Supervised</td>
+                        <td>Stable Baseline</td>
+                        <td>Standard Classification</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td><strong>DINOv2</strong></td>
+                        <td><strong>ViT</strong></td>
+                        <td><strong>1B+</strong></td>
+                        <td><strong>Self-Supervised</strong></td>
+                        <td class="text-success">Generalization</td>
+                        <td class="text-success">Noisy/Unseen Data</td>
+                    </tr>
+                    <tr>
+                        <td>SigLIP</td>
+                        <td>ViT-Language</td>
+                        <td>2B+</td>
+                        <td>Contrastive</td>
+                        <td>Semantic Depth</td>
+                        <td>Zero-shot / Multimodal</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="card" style="background-color: #f1f5f9; padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+                <strong>Strategic Selection:</strong> While SigLIP offers extreme semantic depth, its heavy computational footprint (~300M+ parameters) makes it unsuitable for real-time browser filtration. <strong>DINOv2</strong> was selected as the engine for SafeToon for its high efficiency and ability to generalize across the noisy, diverse visual styles of Elsagate content.
+            </div>
+        </section>
+
+        <!-- SECTION 3: DATASET QUALITY & NOISE ANALYSIS -->
+        <section>
+            <h2>III. Dataset Quality & Noise Analysis</h2>
+            <p>A fundamental differentiator of this project is the transition from <strong>Weakly Labeled Video Data</strong> (Research Baseline) to <strong>Precision-Curated Frame Data</strong> (Proposed Implementation).</p>
+            
+            <h3>Diagnostic Noise Analysis: Label Contamination Matrices</h3>
+            <div style="text-align: center; margin: 2rem 0;">
+                <img src="noise_confusion_matrices.png" 
+                     alt="Noise Confusion Matrices" 
+                     style="width: 100%; max-width: 900px; border: 1px solid var(--border);">
+                <p style="font-size: 0.9rem; color: #64748b; margin-top: 1rem; font-style: italic;">
+                    Figure 1: Conceptual Confusion Matrices of Dataset Labels. The Research Baseline (Red) demonstrates massive "Label Contamination" where 85% of Safe frames were incorrectly labeled as Bad. The Proposed Model (Green) achieves zero contamination through manual frame-level verification.
+                </p>
+            </div>
+
+            <h3>Table 3: Comparison of Label Integrity</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Research Dataset (Baseline)</th>
+                        <th>Proposed Dataset (SafeToon)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Labeling Strategy</strong></td>
+                        <td>Video-Level (Weak)</td>
+                        <td class="text-success">Frame-Level (Precise)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Label Noise</strong></td>
+                        <td class="text-danger">High (Safe segments in bad videos)</td>
+                        <td class="text-success">Zero (Manually Verified)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Source Composition</strong></td>
+                        <td>3,294 Primary Videos</td>
+                        <td>Hybrid (Research Data + New Curated)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Classification</strong></td>
+                        <td>Binary (2 Classes)</td>
+                        <td class="text-success">Granular (3 Classes)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="card" style="background-color: #f8fafc; border-left: 4px solid var(--accent); padding: 1.5rem; margin-top: 2rem;">
+                <strong>Note on Hybrid Integration:</strong> To ensure maximal robustness, the proposed dataset incorporates verified disturbing segments from the original research paper's dataset. These were re-verified at the frame level and combined with 5,000+ new high-quality samples to create a noise-free training environment.
+            </div>
+        </section>
+
+        <!-- SECTION 4: PROPOSED IMPLEMENTATION & METHODOLOGY -->
+        <section>
+            <h2>IV. Proposed Implementation & Methodology</h2>
+            <p>The proposed methodology shifts from video-level labeling to a high-precision manual frame curation strategy.</p>
+            
+            <h3>Dataset Profile</h3>
+            <p>A total of 10,122 frames were manually classified into three distinct categories to minimize label noise.</p>
+            
+            <div style="margin: 2rem 0;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--navy);">
+                    <span>SAFE (44.5%)</span>
+                    <span>VIOLENCE (29.9%)</span>
+                    <span>EROTIC (25.6%)</span>
+                </div>
+                <div class="dataset-bar" style="height: 45px; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                    <div class="bar-segment" style="width: 44.5%; background: #10b981; border-right: 2px solid #fff;" title="Safe"></div>
+                    <div class="bar-segment" style="width: 29.9%; background: #f59e0b; border-right: 2px solid #fff;" title="Violence"></div>
+                    <div class="bar-segment" style="width: 25.6%; background: #ef4444;" title="Erotic"></div>
+                </div>
+                <p style="text-align: center; font-size: 0.9rem; margin-top: 0.5rem; color: #64748b;">
+                    Total Sample Size: <strong>10,122 Frames</strong>
+                </p>
+            </div>
+            
+            <div class="card" style="background-color: #f1f5f9; padding: 1.5rem; border-radius: 8px; margin: 2rem 0;">
+                <strong>Dataset Content Taxonomy:</strong>
+                <ul style="margin-top: 1rem;">
+                    <li><strong>Target Characters:</strong> High-density coverage of "Elsagate" staples including Elsa (Frozen), Spiderman, and The Joker, along with mainstream characters such as <strong>Family Guy</strong>, <strong>Scooby-Doo</strong>, and <strong>Mickey Mouse</strong> (integrated from research baseline).</li>
+                    <li><strong>Violent Scenarios:</strong> Manual curation of depictions involving sharp objects (<strong>scraped images of knives and blades</strong>), firearms (<strong>cartoon-style guns</strong>), and medical/dental trauma.</li>
+                    <li><strong>Inappropriate Themes:</strong> Specific focus on erotic subtext, scatological humor, and disturbing visual juxtapositions unsuitable for children.</li>
+                    <li><strong>Visual Diversity:</strong> High-density focus on 2D animations and traditional cartoon styles to ensure maximum precision in identifying disturbing hand-drawn and digital vector content.</li>
+                </ul>
+            </div>
+            
+            <h3>Table 4: SafeToon Dataset Category Profile</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Total Frames</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span style="color: #10b981; font-weight: bold;">●</span> Safe Content</td><td>4,510</td><td>44.5%</td></tr>
+                    <tr><td><span style="color: #f59e0b; font-weight: bold;">●</span> Violent Content</td><td>3,023</td><td>29.9%</td></tr>
+                    <tr><td><span style="color: #ef4444; font-weight: bold;">●</span> Erotic Content</td><td>2,589</td><td>25.6%</td></tr>
+                    <tr class="highlight"><td><strong>Total</strong></td><td><strong>10,122</strong></td><td><strong>100%</strong></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Table 5: Proposed Model Metrics (SafeToon)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Proposed Architecture</th>
+                        <th>Peak Validation Accuracy</th>
+                        <th>F1-Score (Weighted)</th>
+                        <th>F2-Measure (Safety)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="highlight">
+                        <td><strong>DinoV2 Ensemble</strong></td>
+                        <td class="text-success">94.0%</td>
+                        <td class="text-success">92.0%</td>
+                        <td class="text-success">92.0%</td>
+                    </tr>
+                    <tr>
+                        <td>DinoV1 Ensemble</td>
+                        <td class="text-success">93.6%</td>
+                        <td class="text-success">90.0%</td>
+                        <td class="text-success">90.2%</td>
+                    </tr>
+                    <tr>
+                        <td>NASNet</td>
+                        <td class="text-warning">88.0%</td>
+                        <td class="text-warning">88.0%</td>
+                        <td class="text-warning">88.0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 5: SAFETY AUDIT -->
+        <section>
+            <h2>V. Safety & Generalization Audit</h2>
+            <p>The following metrics evaluate the models' propensity for critical errors (False Negatives) and their ability to generalize to unseen data.</p>
+            
+            <h3>Table 6: False Negative Rate (Safety Reliability)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model Name</th>
+                        <th>False Negative Rate (FN)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>DinoV1</td><td class="text-success">3.18%</td><td class="text-success">Highly Secure</td></tr>
+                    <tr><td>DinoV2</td><td class="text-success">4.07%</td><td class="text-success">High Security</td></tr>
+                    <tr><td>NASNet</td><td class="text-warning">12.50%</td><td class="text-warning">Moderate</td></tr>
+                    <tr><td>SqueezeNet (Baseline)</td><td class="text-danger">38.00%</td><td class="text-danger">Critical Failure</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Generalization Analysis (Train-Val Gap)</h3>
+            <div style="text-align: center; margin: 2rem 0;">
+                <img src="overfitting_comparison.png" alt="Overfitting Analysis Plot" style="width: 100%; max-width: 750px; border: 1px solid var(--border);">
+                <p style="font-size: 0.9rem; color: #64748b; margin-top: 1rem; font-style: italic;">
+                    Figure 2: Accuracy Gap Comparison. A larger gap indicates "Overfitting." SafeToon models (DinoV1/V2) demonstrate near-perfect generalization compared to the baseline.
+                </p>
+            </div>
+
+            <h3 style="margin-top: 3rem;">Table 7: Generalization Analysis (Train-Val Gap)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model Name</th>
+                        <th>Accuracy Gap</th>
+                        <th>Assessment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>DinoV1</td><td class="text-success">+1.0%</td><td class="text-success">Highly Robust</td></tr>
+                    <tr><td>DinoV2</td><td class="text-success">3.0%</td><td class="text-success">Stable</td></tr>
+                    <tr><td>NASNet</td><td class="text-warning">8.3%</td><td class="text-warning">Moderate Overfitting</td></tr>
+                    <tr><td>SqueezeNet (Baseline)</td><td class="text-danger">34.1%</td><td class="text-danger">Failed Generalization</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 6: VISUAL DIAGNOSTICS -->
+        <section>
+            <h2>VI. Training Visualizations</h2>
+            <p>Detailed performance curves illustrating the training and validation progress for the proposed models.</p>
+            
+            <div class="visualization-block">
+                <h3>DinoV2 Diagnostic Metrics</h3>
+                <div class="nasnet-grid">
+                    <img src="DinoVsecondRun_output/acc_curve_new.png" alt="DinoV2 Metrics">
+                    <img src="DinoVsecondRun_output/confusion_matrix.png" alt="DinoV2 Confusion Matrix">
+                </div>
+            </div>
+
+            <div class="visualization-block">
+                <h3>DinoV1 Diagnostic Metrics</h3>
+                <div class="nasnet-grid">
+                    <img src="DinoV1_output/acc_curve_new.png" alt="DinoV1 Metrics">
+                    <img src="DinoV1_output/confusion_matrix.png" alt="DinoV1 Confusion Matrix">
+                </div>
+            </div>
+
+            <div class="visualization-block">
+                <h3>NASNet Diagnostic Plots</h3>
+                <div class="nasnet-grid">
+                    <img src="nasnet_output_train2/curve_new.png" alt="NASNet Curve">
+                    <img src="nasnet_output_train2/confusion_matrix_annotated.png" alt="NASNet Matrix">
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>VII. Project Roadmap</h2>
+            <p>Immediate future objectives for the integration and deployment of the safety filtration system.</p>
+            <ul>
+                <li>Implementation of a Real-time Browser Extension for YouTube filtration.</li>
+                <li>Development of a Mobile Parental Dashboard for cross-platform alerts.</li>
+                <li>Integration of Audio Saliency to detect acoustic disturbing patterns.</li>
+            </ul>
+        </section>
+
+        <div class="footer-note">
+            Technical Analysis Report | SafeToon Project | Comparative Data and Research Study Summary
+        </div>
+    </div>
+
+</body>
+</html>

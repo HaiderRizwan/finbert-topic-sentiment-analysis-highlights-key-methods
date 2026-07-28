@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeToon Ingestion Pipeline</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="glow-orb orb-1" style="background: #3b82f6;"></div>
+    <div class="glow-orb orb-2" style="background: #8b5cf6;"></div>
+
+    <main class="glass-panel">
+        <header>
+            <nav class="pill-nav">
+                <a href="/" class="nav-btn">Inference Engine</a>
+                <a href="/ingestion" class="nav-btn active">Ingestion Pipeline</a>
+            </nav>
+            <h1 style="margin-top: 20px;">Video Ingestion</h1>
+            <p>Extract frames, audio, and metadata from raw video files.</p>
+        </header>
+
+        <section class="controls">
+            <div class="dropdown-container">
+                <label for="fps-input">Extract Frames Per Second (FPS)</label>
+                <input type="number" id="fps-input" value="1.0" step="0.1" min="0.1" max="60" class="sleek-input">
+            </div>
+            
+            <div class="dropdown-container" style="margin-top: 15px;">
+                <label for="output-dir">Output Source Path</label>
+                <input type="text" id="output-dir" value="outputs/" class="sleek-input" placeholder="e.g. outputs/ or C:\Data\Frames">
+            </div>
+        </section>
+
+        <section class="upload-zone" id="drop-zone-video">
+            <input type="file" id="video-upload" accept="video/mp4, video/x-m4v, video/avi, video/webm, video/*" multiple hidden>
+            <div class="upload-content">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                    <line x1="7" y1="2" x2="7" y2="22"></line>
+                    <line x1="17" y1="2" x2="17" y2="22"></line>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <line x1="2" y1="7" x2="7" y2="7"></line>
+                    <line x1="2" y1="17" x2="7" y2="17"></line>
+                    <line x1="17" y1="17" x2="22" y2="17"></line>
+                    <line x1="17" y1="7" x2="22" y2="7"></line>
+                </svg>
+                <h3>Drag & Drop Videos Here</h3>
+                <p>or click to browse local files</p>
+                <div id="video-preview" class="hidden"></div>
+            </div>
+        </section>
+
+        <div id="progress-container" class="hidden" style="margin-top: 15px; width: 100%;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span id="progress-text" style="font-size: 0.9rem; color: var(--text);">Processing 0 of 0...</span>
+                <span id="progress-percentage" style="font-size: 0.9rem; color: var(--primary); font-weight: 600;">0%</span>
+            </div>
+            <div style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden;">
+                <div id="progress-bar-fill" style="width: 0%; height: 100%; background: var(--primary); transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+
+        <button id="ingest-btn" disabled>
+            <span class="btn-text">Run Ingestion</span>
+            <span class="btn-spinner hidden"></span>
+        </button>
+
+        <section class="results-panel hidden" id="ingest-results-panel">
+            <h2>Extraction Complete</h2>
+            
+            <div class="status-card" id="primary-status" style="border-color: rgba(59, 130, 246, 0.5);">
+                <h3 id="ingest-status" style="color: #60a5fa; text-shadow: 0 0 15px rgba(96, 165, 250, 0.5);">SUCCESS</h3>
+                <p id="job-id-text">Job ID: ...</p>
+            </div>
+
+            <div class="detailed-metrics">
+                <div class="metric-row">
+                    <label>Duration</label>
+                    <span id="txt-duration" style="text-align: right; width: 100%;">0.0s</span>
+                </div>
+                <div class="metric-row">
+                    <label>Resolution</label>
+                    <span id="txt-resolution" style="text-align: right; width: 100%;">0x0</span>
+                </div>
+                <div class="metric-row">
+                    <label>Frames Saved</label>
+                    <span id="txt-frames" style="text-align: right; width: 100%; color: var(--primary);">0</span>
+                </div>
+                <div class="metric-row">
+                    <label>Audio Chunks</label>
+                    <span id="txt-audio" style="text-align: right; width: 100%; color: #f43f5e;">0</span>
+                </div>
+            </div>
+
+            <div class="debug-metrics" id="debug-metrics" style="flex-direction: column; text-align: left;">
+                <span class="debug-badge" style="margin-bottom: 8px;">Video: <span id="out-video"></span></span>
+                <span class="debug-badge" style="margin-bottom: 8px;">Frames: <span id="out-frames"></span></span>
+                <span class="debug-badge">Audio: <span id="out-audio"></span></span>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='ingestion.js') }}"></script>
+</body>
+
+</html>

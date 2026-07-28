@@ -1,0 +1,66 @@
+# Virtual environment
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Data & outputs (large files, not tracked)
+data/raw/
+data/videos/
+outputs/
+*_output/
+*_output*/
+nasnet_output_train2/
+extracted_images/
+logs/
+downloads/
+flask_app/downloads/
+flask_app/output/
+flask_app/uploads/
+flask_app/frames/
+flask_app/static/output/
+SafeToon__*/
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Datasets & Large Archives (do NOT push to GitHub)
+dataset/
+dataset_split/
+testing_uploads/
+ScoobyDoo Dataset2/
+scoobidoo dataset/
+*.zip
+
+# Model weights (large binary files)
+models/*.pth
+models/*.pt
+models/*.h5
+models/*.onnx
+*.pth
+*.pt
+
+# Kaggle credentials
+.kaggle/
+kaggle.json
+
+# Environment variables
+.env
+
+# IDE (personal settings only)
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+

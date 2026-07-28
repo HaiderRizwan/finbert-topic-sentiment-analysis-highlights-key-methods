@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeToon AI - Multimodal Video Safety System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Ambient Glowing Background Blobs -->
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
+
+    <div class="app-container">
+        <!-- Header & Branding Navbar -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>SafeToon <span class="badge-tag">AI v3.0</span></h1>
+                    <p>Parallel Multimodal Content Safety & Surgical Video Restitching</p>
+                </div>
+            </div>
+
+            <div class="header-pills">
+                <span class="pill"><i class="fa-solid fa-bolt"></i> Parallel Threads</span>
+                <span class="pill"><i class="fa-solid fa-eye"></i> Vision Ensemble</span>
+                <span class="pill"><i class="fa-solid fa-microphone-slash"></i> Speech Muting</span>
+                <span class="pill"><i class="fa-solid fa-scissors"></i> Surgical Cut</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Configuration Form Card -->
+            <section class="glass-card config-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-sliders"></i> Analysis Pipeline Configuration</h2>
+                    <p class="subtitle">Enter a YouTube video URL and select your preferred vision classification model</p>
+                </div>
+
+                <form id="process-form">
+                    <div class="form-grid">
+                        <div class="input-group full-width">
+                            <label for="url"><i class="fa-brands fa-youtube icon-yt"></i> YouTube Video Link</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-link input-icon"></i>
+                                <input type="text" id="url" name="url" placeholder="https://www.youtube.com/watch?v=..." required autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="model"><i class="fa-solid fa-brain"></i> Vision Model Architecture</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-microchip input-icon"></i>
+                                <select id="model" name="model">
+                                    <option value="dinov2" selected>DinoV2 Ensemble v2 (Recommended - 99.2% Accuracy)</option>
+                                    <option value="dinov1">DINOv2 Ensemble v1 (Legacy)</option>
+                                    <option value="nasnet">NASNet-A (Standard CNN)</option>
+                                    <option value="nasnet_mega">NASNet Mega (Mixed Cartoon Fine-tuned)</option>
+                                    <option value="clip">CLIP Classifier (Vision-Language Zero-Shot)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="fps"><i class="fa-solid fa-film"></i> Sampling Rate (FPS)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-clock-rotate-left input-icon"></i>
+                                <input type="number" id="fps" name="fps" value="0.5" min="0.1" max="10" step="0.1">
+                                <span class="input-suffix">fps</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="glow-button">
+                        <i class="fa-solid fa-rocket"></i> Launch Parallel Safety Pipeline
+                    </button>
+                </form>
+            </section>
+
+            <!-- Real-Time Progress & Dual Terminal Dashboard -->
+            <section class="glass-card status-card" id="status-card" style="display: none;">
+                <div class="status-top-bar">
+                    <div class="status-title-group">
+                        <div class="pulse-indicator active" id="pulse-dot"></div>
+                        <h3>Processing Pipeline Active</h3>
+                    </div>
+                    <span id="status-badge" class="status-pill active-pill">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Processing
+                    </span>
+                </div>
+
+                <div class="progress-bar-wrapper">
+                    <div class="progress-info">
+                        <span id="status-message">Initializing background worker threads...</span>
+                        <span id="progress-percent" class="percent-label">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Dual Terminals Grid -->
+                <div class="terminals-grid">
+                    <div class="terminal-card frame-terminal">
+                        <div class="terminal-top">
+                            <div class="window-controls">
+                                <span class="control-dot close"></span>
+                                <span class="control-dot minimize"></span>
+                                <span class="control-dot expand"></span>
+                            </div>
+                            <span class="terminal-label"><i class="fa-solid fa-eye"></i> Terminal 1: Frame Extraction & Vision Classifier</span>
+                        </div>
+                        <div class="terminal-body" id="frame-console">
+                            <div id="frame-logs" class="log-stream">Initializing frame worker...</div>
+                        </div>
+                    </div>
+
+                    <div class="terminal-card audio-terminal">
+                        <div class="terminal-top">
+                            <div class="window-controls">
+                                <span class="control-dot close"></span>
+                                <span class="control-dot minimize"></span>
+                                <span class="control-dot expand"></span>
+                            </div>
+                            <span class="terminal-label"><i class="fa-solid fa-waveform"></i> Terminal 2: Audio Extraction & Whisper Muting</span>
+                        </div>
+                        <div class="terminal-body" id="audio-console">
+                            <div id="audio-logs" class="log-stream">Initializing audio worker...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Multimodal Analysis Results Showcase -->
+            <section class="glass-card results-card" id="results-card" style="display: none;">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Multimodal Safety Inspection Results</h2>
+                    <span class="badge-success-glow"><i class="fa-solid fa-check-circle"></i> Complete</span>
+                </div>
+
+                <!-- Final Restitched Video Showcase -->
+                <div class="showcase-block final-video-block">
+                    <div class="block-title">
+                        <h3><i class="fa-solid fa-circle-play"></i> Final Censored & Restitched Video</h3>
+                        <p>Intelligently cut unsafe scenes (violence/erotism) merged in 100% sync with muted audio.</p>
+                    </div>
+
+                    <div class="video-container">
+                        <video id="final-video-player" controls preload="metadata"></video>
+                    </div>
+
+                    <div class="action-bar">
+                        <span class="video-spec-pill"><i class="fa-solid fa-shield-check"></i> Safe Content Verified</span>
+                        <a id="download-video-btn" href="#" download class="btn-download">
+                            <i class="fa-solid fa-download"></i> Download Cleaned Video
+                        </a>
+                    </div>
+
+                    <!-- Cut Video Scenes Log Table -->
+                    <div class="sub-block cut-scenes-sub-block">
+                        <div class="sub-title">
+                            <h4><i class="fa-solid fa-scissors"></i> Cut Video Scenes Tracking Log</h4>
+                        </div>
+                        <div id="cut-scenes-container"></div>
+                    </div>
+                </div>
+
+                <!-- Vision Classification Summary Badges -->
+                <div class="showcase-block vision-summary-block">
+                    <div class="block-title">
+                        <h3><i class="fa-solid fa-layer-group"></i> Vision Frame Summary</h3>
+                    </div>
+                    <div id="summary-stats" class="summary-cards-grid"></div>
+                </div>
+
+                <!-- Audio Analysis & Censored Audio Player -->
+                <div class="showcase-block audio-block">
+                    <div class="block-title">
+                        <h3><i class="fa-solid fa-volume-xmark"></i> Audio Analysis & Speech Muting</h3>
+                    </div>
+
+                    <div class="audio-player-wrapper">
+                        <label class="audio-player-title"><i class="fa-solid fa-music"></i> Muted / Censored Audio Track</label>
+                        <audio id="audio-player" controls></audio>
+                    </div>
+
+                    <!-- Detected Curse Words List -->
+                    <div class="sub-block muted-words-sub-block">
+                        <div class="sub-title">
+                            <h4><i class="fa-solid fa-ban"></i> Detected & Muted Words</h4>
+                        </div>
+                        <div id="muted-words-container" class="muted-words-flex"></div>
+                    </div>
+
+                    <!-- Speech Transcription Box -->
+                    <div class="sub-block transcription-sub-block">
+                        <div class="sub-title-between">
+                            <h4><i class="fa-solid fa-file-audio"></i> Speech-to-Text Transcription</h4>
+                            <button id="copy-transcription-btn" class="btn-sm-ghost" onclick="copyTranscription()">
+                                <i class="fa-regular fa-copy"></i> Copy Text
+                            </button>
+                        </div>
+                        <div id="transcription-text" class="transcription-box"></div>
+                    </div>
+                </div>
+
+                <!-- Classified Frame Gallery Grid -->
+                <div class="showcase-block gallery-block">
+                    <div class="block-title-between">
+                        <h3><i class="fa-solid fa-images"></i> Classified Video Frames</h3>
+                        <div class="filter-tabs">
+                            <button class="filter-btn active" data-filter="all" onclick="filterGallery('all')">All Frames</button>
+                            <button class="filter-btn" data-filter="safe" onclick="filterGallery('safe')"><i class="fa-solid fa-shield"></i> Safe</button>
+                            <button class="filter-btn" data-filter="violence" onclick="filterGallery('violence')"><i class="fa-solid fa-hand-fist"></i> Violence</button>
+                            <button class="filter-btn" data-filter="erotism" onclick="filterGallery('erotism')"><i class="fa-solid fa-triangle-exclamation"></i> Erotism</button>
+                        </div>
+                    </div>
+                    <div id="frames-gallery" class="gallery-grid"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Image Modal Lightbox -->
+    <div class="lightbox-modal" id="lightbox-modal" onclick="closeLightbox(event)">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="close-lightbox" onclick="closeLightbox()">&times;</button>
+            <img id="lightbox-img" src="" alt="Frame Preview">
+            <div class="lightbox-info">
+                <span id="lightbox-label" class="status-pill"></span>
+                <span id="lightbox-confidence" class="confidence-tag"></span>
+                <p id="lightbox-filename" class="filename-tag"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('process-form');
+        const statusCard = document.getElementById('status-card');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercent = document.getElementById('progress-percent');
+        const statusMessage = document.getElementById('status-message');
+        const frameLogsDiv = document.getElementById('frame-logs');
+        const audioLogsDiv = document.getElementById('audio-logs');
+        const frameConsole = document.getElementById('frame-console');
+        const audioConsole = document.getElementById('audio-console');
+        const submitBtn = document.getElementById('submit-btn');
+
+        let allResultsData = [];
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Request...';
+            statusCard.style.display = 'block';
+            document.getElementById('results-card').style.display = 'none';
+            frameLogsDiv.innerHTML = '<div class="log-line info">[0%] Starting frame extraction worker...</div>';
+            audioLogsDiv.innerHTML = '<div class="log-line info">[0%] Starting audio extraction worker...</div>';
+            
+            const response = await fetch('/start', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                pollStatus();
+            } else {
+                alert('Error starting task. Please verify server connection.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-rocket"></i> Launch Parallel Safety Pipeline';
+            }
+        };
+
+        async function pollStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+
+                progressBar.style.width = data.progress + '%';
+                progressPercent.innerText = data.progress + '%';
+                statusMessage.innerText = data.message;
+                
+                // Format Dual Terminal Logs
+                if (data.frame_logs && data.frame_logs.length > 0) {
+                    frameLogsDiv.innerHTML = data.frame_logs.map(log => {
+                        let cls = 'log-line';
+                        if (log.includes('ERROR')) cls += ' log-error';
+                        else if (log.includes('100%') || log.includes('finished')) cls += ' log-success';
+                        else if (log.includes('[')) cls += ' log-info';
+                        return `<div class="${cls}">${escapeHtml(log)}</div>`;
+                    }).join('');
+                    frameConsole.scrollTop = frameConsole.scrollHeight;
+                }
+                if (data.audio_logs && data.audio_logs.length > 0) {
+                    audioLogsDiv.innerHTML = data.audio_logs.map(log => {
+                        let cls = 'log-line';
+                        if (log.includes('ERROR')) cls += ' log-error';
+                        else if (log.includes('100%') || log.includes('completed')) cls += ' log-success';
+                        else if (log.includes('[')) cls += ' log-info-pink';
+                        return `<div class="${cls}">${escapeHtml(log)}</div>`;
+                    }).join('');
+                    audioConsole.scrollTop = audioConsole.scrollHeight;
+                }
+
+                if (data.active) {
+                    setTimeout(pollStatus, 1000);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-rocket"></i> Launch Parallel Safety Pipeline';
+                    if (data.progress === 100) {
+                        showResults(data);
+                    }
+                }
+            } catch (err) {
+                console.error("Polling error:", err);
+                setTimeout(pollStatus, 2000);
+            }
+        }
+
+        function showResults(data) {
+            const resultsCard = document.getElementById('results-card');
+            const summaryStats = document.getElementById('summary-stats');
+            resultsCard.style.display = 'block';
+
+            // Scroll smoothly to results
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+            // Final Censored Video Player & Cut Scenes Log
+            if (data.final_video_url) {
+                const vPlayer = document.getElementById('final-video-player');
+                const dBtn = document.getElementById('download-video-btn');
+                vPlayer.src = data.final_video_url;
+                dBtn.href = data.final_video_url;
+            }
+
+            const cutScenes = data.cut_scenes || [];
+            const cutContainer = document.getElementById('cut-scenes-container');
+            if (cutScenes.length > 0) {
+                cutContainer.innerHTML = `
+                    <div class="cut-table-wrapper">
+                        <table class="cut-table">
+                            <thead>
+                                <tr>
+                                    <th>Cut #</th>
+                                    <th>Reason / Category</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Duration Removed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${cutScenes.map(c => `
+                                    <tr>
+                                        <td><span class="cut-number-tag">Cut #${c.index}</span></td>
+                                        <td><span class="pill-danger"><i class="fa-solid fa-ban"></i> ${c.reason}</span></td>
+                                        <td><i class="fa-regular fa-clock"></i> ${c.start_fmt} <small class="sec-text">(${c.start}s)</small></td>
+                                        <td><i class="fa-regular fa-clock"></i> ${c.end_fmt} <small class="sec-text">(${c.end}s)</small></td>
+                                        <td><span class="duration-highlight"><i class="fa-solid fa-stopwatch"></i> ${c.duration_fmt}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                cutContainer.innerHTML = `
+                    <div class="empty-banner success-banner">
+                        <i class="fa-solid fa-circle-check"></i> No video scenes were cut. All video frames were classified as safe & clean!
+                    </div>
+                `;
+            }
+
+            allResultsData = data.results || [];
+            
+            // Vision Frame Summary Counts
+            const counts = allResultsData.reduce((acc, res) => {
+                const l = res.label.toLowerCase();
+                if (l.includes('safe') || l.includes('normal')) acc.safe = (acc.safe || 0) + 1;
+                else if (l.includes('violen')) acc.violence = (acc.violence || 0) + 1;
+                else if (l.includes('erot')) acc.erotism = (acc.erotism || 0) + 1;
+                else acc[l] = (acc[l] || 0) + 1;
+                return acc;
+            }, {});
+
+            summaryStats.innerHTML = `
+                <div class="summary-card card-safe">
+                    <div class="icon-box"><i class="fa-solid fa-shield-check"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">${counts.safe || 0}</span>
+                        <span class="stat-label">Safe / Normal Frames</span>
+                    </div>
+                </div>
+                <div class="summary-card card-violence">
+                    <div class="icon-box"><i class="fa-solid fa-hand-fist"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">${counts.violence || 0}</span>
+                        <span class="stat-label">Violent Frames</span>
+                    </div>
+                </div>
+                <div class="summary-card card-erotism">
+                    <div class="icon-box"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value">${counts.erotism || 0}</span>
+                        <span class="stat-label">Erotic Frames</span>
+                    </div>
+                </div>
+            `;
+
+            // Audio Player & Transcription
+            const audioInfo = data.audio_info || {};
+            const audioPlayer = document.getElementById('audio-player');
+            const transcriptionDiv = document.getElementById('transcription-text');
+            const mutedWordsDiv = document.getElementById('muted-words-container');
+
+            if (audioInfo.web_audio_url) {
+                audioPlayer.src = audioInfo.web_audio_url;
+            }
+
+            transcriptionDiv.innerText = audioInfo.transcription || "No audio transcription generated.";
+
+            // Muted Words Cards
+            const flaggedWords = audioInfo.flagged_words || [];
+            if (flaggedWords.length > 0) {
+                mutedWordsDiv.innerHTML = flaggedWords.map(w => {
+                    const fmtSec = (sec) => {
+                        const m = Math.floor(sec / 60);
+                        const s = (sec % 60).toFixed(2);
+                        return m > 0 ? `${m}m ${s}s` : `${sec.toFixed(2)}s`;
+                    };
+                    const startDisp = w.start_fmt || fmtSec(w.start);
+                    const endDisp = w.end_fmt || fmtSec(w.end);
+                    return `
+                        <div class="muted-word-card">
+                            <div class="word-header">
+                                <i class="fa-solid fa-volume-xmark"></i>
+                                <span class="word-title">${escapeHtml(w.word)}</span>
+                            </div>
+                            <span class="word-time"><i class="fa-regular fa-clock"></i> ${startDisp} - ${endDisp}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                mutedWordsDiv.innerHTML = `
+                    <div class="empty-banner success-banner">
+                        <i class="fa-solid fa-circle-check"></i> No curse or sensitive words detected in the audio track.
+                    </div>
+                `;
+            }
+
+            // Render Frame Gallery Grid
+            renderGallery('all');
+        }
+
+        function renderGallery(filter) {
+            const galleryDiv = document.getElementById('frames-gallery');
+            let filtered = allResultsData;
+
+            if (filter !== 'all') {
+                filtered = allResultsData.filter(r => {
+                    const l = r.label.toLowerCase();
+                    if (filter === 'safe') return l.includes('safe') || l.includes('normal');
+                    if (filter === 'violence') return l.includes('violen');
+                    if (filter === 'erotism') return l.includes('erot');
+                    return l === filter;
+                });
+            }
+
+            if (filtered.length === 0) {
+                galleryDiv.innerHTML = `<div class="empty-banner">No frames matched the "${filter}" filter category.</div>`;
+                return;
+            }
+
+            galleryDiv.innerHTML = filtered.map(f => {
+                const lbl = f.label.toLowerCase();
+                let badgeClass = 'tag-safe';
+                let iconClass = 'fa-shield';
+                if (lbl.includes('violen')) { badgeClass = 'tag-danger'; iconClass = 'fa-hand-fist'; }
+                if (lbl.includes('erot')) { badgeClass = 'tag-warning'; iconClass = 'fa-triangle-exclamation'; }
+
+                return `
+                    <div class="frame-card" onclick="openLightbox('${f.web_url}', '${f.label}', '${f.confidence}%', '${f.filename}')">
+                        <div class="img-wrapper">
+                            <img src="${f.web_url}" alt="${f.filename}" loading="lazy">
+                            <div class="overlay-hover"><i class="fa-solid fa-magnifying-glass-plus"></i> Preview</div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="badge-tag ${badgeClass}"><i class="fa-solid ${iconClass}"></i> ${f.label.toUpperCase()}</span>
+                            <span class="confidence-pill">${f.confidence}%</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterGallery(filter) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            renderGallery(filter);
+        }
+
+        function openLightbox(url, label, confidence, filename) {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox-label').innerText = label.toUpperCase();
+            document.getElementById('lightbox-confidence').innerText = confidence + ' Confidence';
+            document.getElementById('lightbox-filename').innerText = filename;
+            document.getElementById('lightbox-modal').classList.add('show');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-modal').classList.remove('show');
+        }
+
+        function copyTranscription() {
+            const text = document.getElementById('transcription-text').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copy-transcription-btn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Text';
+                }, 2000);
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>

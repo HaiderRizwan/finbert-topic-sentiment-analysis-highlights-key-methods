@@ -1,0 +1,21 @@
+# SafeToon Project Rules (Cursor)
+
+This file gives Cursor the same context that Antigravity gets from `.agents/context.md`.
+For the full project context, architecture, conventions, and workflows, see `.agents/context.md`.
+
+## Key Points
+
+- **3-class classification:** violence, erotic, normal
+- **Config:** All parameters in `src/config.py` — import `cfg`
+- **Logging:** Use `from src.logger import get_logger; log = get_logger(__name__)` — never bare `print()`
+- **Python 3.13+** — modern syntax: `str | Path`, `list[...]`
+- **Paths:** Use `pathlib.Path` internally
+- **Type hints** on all function signatures
+- **Tests:** `pytest`, files in `tests/test_<module>.py`
+- **Gitignored:** `venv/`, `data/raw/`, `data/videos/`, `outputs/`, `logs/`, `models/`, `.env`
+
+## Architecture
+
+Video → Validator → Job Manager → Extractor (frames + audio) → Preprocessor → Indexer → [Model]
+
+See `.agents/context.md` for full details.
