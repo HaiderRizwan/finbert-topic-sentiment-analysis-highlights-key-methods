@@ -347,9 +347,11 @@ def process_video_audio(video_path, output_dir, mode="mute", log_fn=print):
     try:
         import whisper
         log_fn("[45%] Loading Whisper speech recognition model 'base'...")
-        whisper_model = whisper.load_model("base")
-        log_fn(f"[60%] Transcribing audio text: {os.path.basename(wav_path)}...")
-        result = whisper_model.transcribe(wav_path, word_timestamps=True)
+        whisper_model = whisper.load_model("base", device=DEVICE)
+        log_fn(f"[60%] Transcribing audio text (device: {DEVICE}): {os.path.basename(wav_path)}...")
+        use_fp16 = (DEVICE.type == "cuda")
+        result = whisper_model.transcribe(wav_path, word_timestamps=True, fp16=use_fp16)
+
         log_fn("[75%] Speech transcription complete.")
     except Exception as e:
         log_fn(f"Whisper transcription error: {e}")
@@ -541,14 +543,14 @@ def create_final_safe_video(video_path, raw_results, audio_path, output_dir, fps
         for idx, (s_start, s_end) in enumerate(safe_windows):
             seg_file = os.path.join(output_dir, f"safe_seg_{idx:03d}.mp4")
             seg_cmd = [
-                "ffmpeg", "-ss", str(round(s_start, 2)), "-to", str(round(s_end, 2)),
-                "-i", synced_full_video,
-                "-c:v", "libx264", "-preset", "fast",
-                "-c:a", "aac", "-avoid_negative_ts", "make_zero",
+                "ffmpeg", "-ss", str(round(s_start, 2)), "-i", synced_full_video,
+                "-t", str(round(s_end - s_start, 2)),
+                "-c:v", "copy", "-c:a", "aac", "-avoid_negative_ts", "make_zero",
                 seg_file, "-y"
             ]
             subprocess.run(seg_cmd, check=True, capture_output=True)
             temp_segments.append(seg_file)
+
 
         # Write concat list file
         with open(concat_list_path, "w") as f:

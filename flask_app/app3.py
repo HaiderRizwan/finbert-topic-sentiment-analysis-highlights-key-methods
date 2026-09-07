@@ -259,6 +259,5 @@ def page_not_found(e):
         "error": "Route not found",
         "available_routes": ["/", "/start (POST)", "/process (POST)", "/status (GET)", "/media/<path:filename>"]
     }), 404
-
 if __name__ == "__main__":
-    app.run(debug=False, port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
